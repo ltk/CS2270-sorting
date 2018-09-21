@@ -38,7 +38,22 @@ int quicksort_partition(vector<int> &data, int low_idx, int high_idx) {
 }
 
 void bubblesort(vector<int> &data) {
-  // TODO
+  while (true) {
+    bool sorted = true;
+
+    for (int i = 0; i < data.size() - 1; i++) {
+      if (data[i] > data[i + 1]) {
+        sorted = false;
+        int t = data[i];
+        data[i] = data[i + 1];
+        data[i + 1] = t;
+      }
+    }
+
+    if (sorted) {
+      return;
+    }
+  }
 }
 
 void mergesort(vector<int> &data) {
