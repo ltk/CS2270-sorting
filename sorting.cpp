@@ -1,5 +1,9 @@
 /*
 
+  Lawson Kurtz
+  09/21/2018
+  I'm implementing Insertion Sort as my mystery sort.
+
   sorting.cpp
 
   Please refer to sorting.h for documentation on each function.
@@ -28,21 +32,43 @@
 
 using namespace std;
 
+// For my debugging purposes.
 void print_vector(vector<int> &v) {
   for (int i = 0; i < (int) v.size(); i++) {
-    // cout << "v at " << i << " is " << v[i] << endl;
     cout << v[i] << ", ";
   }
   cout << endl;
 }
 
+void swap_values(vector<int> &v, int i1, int i2) {
+  int t = v[i1];
+  v[i1] = v[i2];
+  v[i2] = t;
+}
+
 
 void quicksort(vector<int> &data, int low_idx, int high_idx) {
-  // TODO
+  if (low_idx < high_idx) {
+    int p = quicksort_partition(data, low_idx, high_idx);
+    quicksort(data, low_idx, p - 1);
+    quicksort(data, p + 1, high_idx);
+  }
 }
 
 int quicksort_partition(vector<int> &data, int low_idx, int high_idx) {
-  // TODO
+  int pivot = data[high_idx];
+  int i = low_idx - 1;
+  for (int j = low_idx; j < high_idx; j++) {
+    if (data[j] < pivot) {
+      i++;
+      swap_values(data, i, j);
+    }
+  }
+  if (data[high_idx] < data[i + 1]) {
+    swap_values(data, i + 1, high_idx);
+  }
+
+  return i + 1;
 }
 
 void bubblesort(vector<int> &data) {
@@ -59,7 +85,7 @@ void bubblesort(vector<int> &data) {
       }
     }
 
-    // If nothing had to be resorted during this pass, our list is in order!
+    // If nothing had to be resorted during this pass, our list is in order! w00t.
     if (sorted) {
       return;
     }
@@ -67,18 +93,7 @@ void bubblesort(vector<int> &data) {
 }
 
 void mergesort(vector<int> &data) {
-  // Split in half, mergesort each half.
-  // left = subvec
-  // right = subvec
-  // merge(left, right);
-
-  // cout << "Full" << endl;
-  // print_vector(data);
-  // cout << "M1" << endl;
-
   if (data.size() < 2) {
-    // Stopping condition!
-    // cout << "Stopped." << endl;
     return;
   }
 
@@ -86,82 +101,26 @@ void mergesort(vector<int> &data) {
   vector<int> left = vector<int>(data.begin(), data.begin() + midpoint);
   vector<int> right = vector<int>(data.begin() + midpoint, data.end());
 
-  
-  // cout << "Splitting:" << endl;
-  // cout << "Left" << endl;
-  // print_vector(left);
-  // cout << "Right" << endl;
-  // print_vector(right); 
-
   mergesort(left);
-  // cout << "M2" << endl;
   mergesort(right);
-  // cout << "M3" << endl;
-
-  // cout << "Left" << endl;
-  // print_vector(left);
-  // cout << "Right" << endl;
-  // print_vector(right);
-  // cout << "M1" << endl;
-  // if (left.size() != right.size()) {
-  //   cout << "Mismatched sizes" << endl;
-  //   print_vector(left);
-  //   print_vector(right);
-  // }
   data = merge(left, right);
 }
 
 vector<int> merge(vector<int> &left, vector<int> &right) {
-  // !!!!!!!!! FIX TEST BEFORE SUBMITTING !!!!!!!!!
-  
-
   vector<int> combo;
   combo.reserve(left.size() + right.size());
 
-  // int comboIndex = 0;
   int rightIndex = 0;
   int leftIndex = 0;
 
-  // cout << endl;
-  // cout << "Left" << endl;
-  // print_vector(left);
-  // cout << "Right" << endl;
-  // print_vector(right);
-  // cout << endl;
-
-
   while (true) {
-    // cout << "LI " << leftIndex << endl; 
-    // cout << "RI " << rightIndex<< endl; 
-  
     bool leftOutOfBounds = leftIndex >= left.size();
     bool rightOutOfBounds = rightIndex >= right.size();
 
-    // if (leftIndex >= left.size() || ) {
-    //   // Add Right
-    // } else if () {
-
-    // } else {
-    //   break;
-    // }
-    // left[leftIndex]
-    // right[rightIndex]
-
-    // if (rightOutOfBounds && leftOutOfBounds) {
-    //   break;
-    // // } else if (rightOutOfBounds && !leftOutOfBounds) {
-    // //   combo.push_back(left[leftIndex]);
-    // //   leftIndex++;
-    // // } else if (leftOutOfBounds && !rightOutOfBounds) {
-    // //   combo.push_back(right[rightIndex]);
-    // //   rightIndex++;
-    // } else 
    if ((rightOutOfBounds && !leftOutOfBounds) || (!leftOutOfBounds && !rightOutOfBounds && left[leftIndex] < right[rightIndex])) {
-      // cout << "Adding L " << left[leftIndex] << endl;
       combo.push_back(left[leftIndex]);
       leftIndex++;
     } else if (!rightOutOfBounds) {
-      // cout << "Adding R " << right[rightIndex] << endl;
       combo.push_back(right[rightIndex]);
       rightIndex++;
     } else {
@@ -169,21 +128,20 @@ vector<int> merge(vector<int> &left, vector<int> &right) {
     }
   }
 
-  // cout << "Combo" << endl;
-  // print_vector(combo);
-  // cout << endl;
-
-  // combo.insert(combo.end(), left.begin(), left.end());
-  // combo.insert(combo.end(), right.begin(), right.end());
-  // compare the first element in the left and right
-  // remove the smaller of the two, place it at the end of the combo result
-  // if (left[0] < )
   return combo;
 }
 
+
 void mystery_sort(vector<int> &data) {
-  // TODO
-  // Algorithm implemented: ___________________
-  
+  // Algorithm implemented: Insertion Sort
+  if (data.size() < 2) {
+    return;
+  }
+
+  for (int i = 1; i < data.size(); i++) {
+    for (int j = i; j > 0 && data[j - 1] > data[j]; j--) {
+      swap_values(data, j, j - 1);
+    }
+  }
 }
 
